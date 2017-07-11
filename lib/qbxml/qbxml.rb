@@ -30,6 +30,7 @@ class Qbxml
     @schema  = key
     @version = version
     @doc     = parse_schema(key, version)
+    @order = []
   end
 
   # returns all xml nodes matching a specified pattern
@@ -54,7 +55,6 @@ class Qbxml
     hash = Qbxml::Hash.from_hash(hash, camelize: true)
     hash = namespace_qbxml_hash(hash) unless opts[:no_namespace] 
     validate_qbxml_hash(hash) if opts[:validate]
-
     Qbxml::Hash.to_xml(hash, schema: XML_DIRECTIVES[@schema], version: @version)
   end
 
@@ -77,6 +77,14 @@ class Qbxml
     end
 
     return "#{prefix}>"
+  end
+
+  def validate_order(hash)
+    h = Qbxml::Hash.from_hash(hash, camelize: true)
+    h2 = namespace_qbxml_hash(h)
+    doc = describe(h.keys.first)
+    validate_qbxml_hash(h2)
+    @order == @order.sort
   end
 
 # private
@@ -118,6 +126,9 @@ class Qbxml
   def validate_xpath(path)
     xpath = "/#{path.join('/')}"
     raise "#{xpath} is not a valid type" if @doc.xpath(xpath).empty?
+    unless @doc.at(xpath).line.nil?
+      @order.push(@doc.at(xpath).line)
+    end
   end
 
 end

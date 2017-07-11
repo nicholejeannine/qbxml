@@ -75,4 +75,12 @@ class HashToXmlTest < Minitest::Test
     assert_equal "<foo>\n  <bar>baz</bar>\n  <bar>guh</bar>\n</foo>\n", Qbxml::Hash.to_xml({:foo => {:bar => ['baz', 'guh']}}, {skip_instruct: true})
   end
 
+  def test_validate_order
+	  qbxml = Qbxml.new
+	  good_hash = {:invoice_mod_rq=>{:invoice_mod=>{:txn_id=>"1929B9-1423150873", :edit_sequence=>nil, :customer_ref=>{:list_id=>"4A50001-1013529664"}, :txn_date=>"2015-01-28", :ref_number=>"12345678", :memo=>"", :invoice_line_mod=>[{:txn_line_id=>-1, :item_ref=>{:full_name=>"Sales"}, :desc=>"Contract 123", :quantity=>"23.44165", :rate=> 515.0, :sales_tax_code_ref=>{:full_name=>"E"}}]}}}
+	  bad_hash = {:customer_add_rq=>{:customer_add=>{:name=>"Joe Blow", :company_name=>"Joe Blow Inc.", :bill_address=>{:city=>"Springfield", :state=>"Texachussets", :addr1=>"123 Fake Street", :postal_code=>"99999", :country=>"USA"}}}}
+		assert_equal(true, qbxml.validate_order(good_hash))
+		assert_equal(false, qbxml.validate_order(bad_hash))
+  end
+
 end
