@@ -80,10 +80,10 @@ class Qbxml
   end
 
   def validate_order(hash)
-    h = Qbxml::Hash.from_hash(hash, camelize: true)
-    h2 = namespace_qbxml_hash(h)
-    doc = describe(h.keys.first)
-    validate_qbxml_hash(h2)
+    hash = Qbxml::Hash.from_hash(hash, camelize: true)
+    doc = describe(hash.keys.first)
+    hash = namespace_qbxml_hash(hash)
+    validate_qbxml_hash(hash)
     @order == @order.sort
   end
 
